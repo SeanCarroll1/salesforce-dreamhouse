@@ -1,0 +1,18 @@
+pipeline{
+
+    stages{
+
+        stage('test'){
+            steps{
+                echo ' test stage ran'
+            }
+        }
+
+         stage('deployment'){
+            steps{
+                echo 'Deployment Stage'
+            }
+        }
+    }
+
+}
