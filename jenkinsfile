@@ -1,19 +1,18 @@
-pipeline{
-    agent any
-    
-    stages{
-
-        stage('test'){
-            steps{
-                echo ' test stage ran'
-            }
-        }
-
-         stage('deployment'){
-            steps{
-                echo 'Deployment Stage'
-            }
-        }
+pipeline {
+  agent any
+  stages {
+    stage('test') {
+      steps {
+        echo ' test stage ran'
+        echo 'new line'
+      }
     }
 
+    stage('deployment') {
+      steps {
+        echo 'Deployment Stage'
+      }
+    }
+
+  }
 }
