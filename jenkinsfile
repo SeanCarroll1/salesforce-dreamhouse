@@ -14,6 +14,10 @@ pipeline{
             echo 'new line'
             echo ' success '
 
+            dir('subDir') {
+                checkout scm
+            }
+
             script {
                 //sfdx sfpowerkit:project:diff -d deltaTest2 -x -r DX-sitD -t feature/new-silhouette-images
                 SFDX = command "${toolbelt}/sfdx force:org:list"
