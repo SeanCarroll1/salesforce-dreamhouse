@@ -1,5 +1,10 @@
-
-.idea/vcs.xml
-.idea/salesforce-dreamhouse.iml
-.idea/modules.xml
-.idea/misc.xml
+.classpath
+.DS_Store
+.sfdx
+.project
+.salesforce
+.vscode
+.idea
+.tern-project
+.settings
+IlluminatedCloud/

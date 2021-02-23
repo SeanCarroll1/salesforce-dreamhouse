@@ -1,25 +1,37 @@
-pipeline {
+pipeline{
 
-    agent {
-        label 'test'
+    //environment{
+      //  toolbelt = tool 'sfdx_toolbelt'
+    //}
+
+    //agent {
+      //  label 'Windows_Slave_1'
+    //}
+    agent any
+
+
+    stages{
+        stage('checkout source') {
+            steps{
+                echo ' checkout'
+                checkout scm
+                echo ' checkout complete'
+
+            }
+        }
+
+
+        stage('test'){
+            steps{
+                echo ' test stage ran'
+            }
+        }
+
+         stage('deployment'){
+            steps{
+                echo 'Deployment Stage'
+            }
+        }
     }
 
-    stages {
-        stage('test') {
-          steps {
-
-            echo ' test stage ran'
-            echo 'new line'
-            echo ' success '
-          }
-    }
-
-
-    stage('deployment') {
-      steps {
-        echo 'Deployment Stage'
-      }
-    }
-
-  }
 }
