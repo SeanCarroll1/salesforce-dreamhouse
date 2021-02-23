@@ -14,8 +14,9 @@ pipeline{
             echo 'new line'
             echo ' success '
 
-            dir('subDir') {
+            dir('repo') {
                 checkout scm
+                command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
             }
 
             script {
@@ -25,8 +26,8 @@ pipeline{
                 SFDX_2 = command "${toolbelt}/sfdx force:org:list"
                 echo "2nd: ${SFDX_2}"
 
-                command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
-                echo "project creation:: ${CREATE_PROJECT}"
+                //command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
+                //echo "project creation:: ${CREATE_PROJECT}"
             }
 
             }
