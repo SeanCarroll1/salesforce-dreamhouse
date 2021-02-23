@@ -4,13 +4,14 @@ pipeline {
         label 'test'
     }
 
-  stages {
-    stage('test') {
-      steps {
+    stages {
+        stage('test') {
+          steps {
 
-        echo ' test stage ran'
-        echo 'new line'
-      }
+            echo ' test stage ran'
+            echo 'new line'
+            echo ' success '
+          }
     }
 
 
