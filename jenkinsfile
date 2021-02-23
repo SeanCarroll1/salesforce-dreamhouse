@@ -1,11 +1,10 @@
 pipeline {
 
   agent any
+  
   stages {
     stage('test') {
       steps {
-        echo %PATH%
-        echo %USERDOMAIN%\%USERNAME%
 
         echo ' test stage ran'
         echo 'new line'
