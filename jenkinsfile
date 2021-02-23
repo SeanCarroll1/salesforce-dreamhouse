@@ -1,36 +1,19 @@
 pipeline{
-
-    //environment{
-      //  toolbelt = tool 'sfdx_toolbelt'
-    //}
-
-     agent {
+    agent {
         label 'test'
     }
-
-
     stages{
-        stage('checkout source') {
+        stage('test') {
             steps{
-                echo ' checkout'
-                checkout scm
-                echo ' checkout complete'
-
+            echo ' test stage ran'
+            echo 'new line'
+            echo ' success '
             }
         }
-
-
-        stage('test'){
-            steps{
-                echo ' test stage ran'
-            }
-        }
-
          stage('deployment'){
             steps{
                 echo 'Deployment Stage'
             }
         }
     }
-
 }
