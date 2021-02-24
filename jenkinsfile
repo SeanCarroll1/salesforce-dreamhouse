@@ -1,4 +1,5 @@
 pipeline {
+    //List of variables - /env-vars.html/
 
     agent {
         label 'test'
@@ -25,6 +26,8 @@ pipeline {
         }
 
         stage('deployment') {
+            //acting branch is always available via BRANCH_NAME
+            //BRANCH_NAME == 'dev' etc - can be used to decided which sandbox deploying to
             steps {
                 echo 'Deployment Stage'
             }
