@@ -16,6 +16,7 @@ pipeline{
 
             dir('repo') {
                 checkout scm
+                command "git fetch --all"
                 command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
 
                 script {
