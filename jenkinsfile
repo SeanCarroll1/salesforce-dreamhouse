@@ -1,52 +1,43 @@
-pipeline{
-    agent {
-        label 'test'
-    }
+pipeline {
+  agent {
+    label 'test'
+  }
+  stages {
+    stage('test') {
+      steps {
+        echo ' test stage ran'
+        echo 'new line'
+        echo ' success '
+        dir(path: 'repo') {
+          checkout scm
+          command 'git fetch --all'
+          command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
+          script {
+            echo 'Script in repo'
+            command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
+          }
 
-    environment{
-        toolbelt = tool 'sfdx_toolbelt'
-    }
-
-    stages{
-        stage('test') {
-            steps{
-            echo ' test stage ran'
-            echo 'new line'
-            echo ' success '
-
-            dir('repo') {
-                checkout scm
-                command "git fetch --all"
-                command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
-
-                script {
-                    echo 'Script in repo'
-                    command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
-                }
-
-                //Delete folder when finished
-                //deleteDir()
-
-            }
-
-            script {
-                //sfdx sfpowerkit:project:diff -d deltaTest2 -x -r DX-sitD -t feature/new-silhouette-images
-                SFDX = command "${toolbelt}/sfdx force:org:list"
-                echo "command: ${SFDX}"
-                SFDX_2 = command "${toolbelt}/sfdx force:org:list"
-                echo "2nd: ${SFDX_2}"
-
-                //command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
-                //echo "project creation:: ${CREATE_PROJECT}"
-            }
-
-            }
         }
 
-         stage('deployment'){
-            steps{
-                echo 'Deployment Stage'
-            }
+        script {
+          SFDX = command "${toolbelt}/sfdx force:org:list"
+          echo "command: ${SFDX}"
+          SFDX_2 = command "${toolbelt}/sfdx force:org:list"
+          echo "2nd: ${SFDX_2}"
         }
+
+        sh '"${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"'
+      }
     }
+
+    stage('deployment') {
+      steps {
+        echo 'Deployment Stage'
+      }
+    }
+
+  }
+  environment {
+    toolbelt = 'sfdx_toolbelt'
+  }
 }
