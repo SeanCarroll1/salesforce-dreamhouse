@@ -17,7 +17,7 @@ pipeline {
             echo 'new line'
             echo ' success '
 
-            dir(path: 'repo') {
+            dir('repo') {
               checkout scm
               sh"git fetch"
               sh"git checkout test-delta"
