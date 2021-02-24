@@ -4,6 +4,9 @@ pipeline {
         label 'test'
     }
 
+    environment {
+        toolbelt = tool name: 'sfdx_toolbelt', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
+    }
 
     stages {
         stage('test') {
@@ -15,6 +18,8 @@ pipeline {
 
             dir(path: 'repo') {
               checkout scm
+              sh "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-delta"
+
             }
           }
         }
