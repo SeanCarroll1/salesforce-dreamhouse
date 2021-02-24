@@ -32,4 +32,20 @@ pipeline {
 
     }
 
+    post{
+        echo "post logic executed"
+
+        always{
+            //will always run regardless of failure or success
+        }
+
+        success{
+            //Run on success
+        }
+
+        failure{
+            //Run on failure
+        }
+    }
+
 }
