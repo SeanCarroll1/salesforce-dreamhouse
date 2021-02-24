@@ -19,6 +19,8 @@ pipeline {
 
             dir(path: 'repo') {
               checkout scm
+              sh"git fetch"
+              sh"git checkout test-delta"
               sh "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-delta"
 
             }
