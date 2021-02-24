@@ -1,43 +1,54 @@
 pipeline {
-  agent {
-    label 'test'
-  }
-  stages {
-    stage('test') {
-      steps {
-        echo ' test stage ran'
-        echo 'new line'
-        echo ' success '
-        dir(path: 'repo') {
-          checkout scm
-          command 'git fetch --all'
-          command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
-          script {
-            echo 'Script in repo'
-            command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
+    //List of variables - /env-vars.html/
+
+    agent {
+        label 'test'
+    }
+
+    environment {
+        toolbelt = tool name: 'sfdx_toolbelt', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
+    }
+
+    stages {
+        stage('test') {
+
+          steps {
+            echo ' test stage ran'
+            echo 'new line'
+            echo ' success '
+
+            dir(path: 'repo') {
+              checkout scm
+              sh "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-delta"
+
+            }
           }
-
         }
 
-        script {
-          SFDX = command "${toolbelt}/sfdx force:org:list"
-          echo "command: ${SFDX}"
-          SFDX_2 = command "${toolbelt}/sfdx force:org:list"
-          echo "2nd: ${SFDX_2}"
+        stage('deployment') {
+            //acting branch is always available via BRANCH_NAME
+            //BRANCH_NAME == 'dev' etc - can be used to decided which sandbox deploying to
+            steps {
+                echo 'Deployment Stage'
+            }
         }
 
-        sh '"${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"'
-      }
     }
 
-    stage('deployment') {
-      steps {
-        echo 'Deployment Stage'
-      }
+    post{
+        echo "post logic executed"
+
+        always{
+            //will always run regardless of failure or success
+        }
+
+        success{
+            //Run on success
+        }
+
+        failure{
+            //Run on failure
+        }
     }
 
-  }
-  environment {
-    toolbelt = 'sfdx_toolbelt'
-  }
 }
