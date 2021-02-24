@@ -22,9 +22,9 @@ pipeline{
                     echo 'Script in repo'
                     command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-plugin"
                 }
-                
+
                 //Delete folder when finished
-                deleteDir()
+                //deleteDir()
 
             }
 
