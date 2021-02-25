@@ -27,8 +27,14 @@ node("test") {
             stage('checkout source') {
                 echo 'Pulling...' + env.BRANCH_NAME
                 echo 'Branch name: ' + BRANCH_NAME
-                
-                checkout scm
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/master'], 
+                    [name: '*/test-delta']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[credentialsId: '2d3514e0-032d-42cc-87b2-2a29d37b3eab',
+                    url: 'https://github.com/SeanCarroll1/salesforce-dreamhouse.git']]])
+                //checkout scm
             }
             
             // -------------------------------------------------------------------------
@@ -37,8 +43,8 @@ node("test") {
             
             stage('Create Delta Package') {
                 echo "Delta package"
-                command "git"
-                rc = command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r origin/master -t test-delta"
+                //command "git"
+                rc = command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r origin/master -t origin/test-delta"
                 
                 if (rc != 0) {
                     error 'Error creating delta package'
@@ -65,19 +71,18 @@ node("test") {
             // -------------------------------------------------------------------------
             // Push source to test scratch org.
             // -------------------------------------------------------------------------
-            /*
-            stage('Push To Test Scratch Org') {
-                rc = command "${toolbelt}/sfdx force:source:push --targetusername ciorg"
+            stage('Push To Org') {
+                rc = command "${toolbelt}/sfdx force:source:deploy -p ./deltaTest2/force-app/main/default  --targetusername sean_carroll@ch.honda.com.sc"
                 if (rc != 0) {
                     error 'Salesforce push to test scratch org failed.'
                 }
-            }*/
+            }
         }
     }
 
-    stage('test'){
+    /*stage('test'){
         deleteDir()
-    }
+    }*/
 
 }
 
