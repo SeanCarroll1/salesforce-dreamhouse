@@ -1,53 +1,90 @@
-pipeline {
-    //List of variables - /env-vars.html/
+#!groovy
 
-    agent {
-        label 'test'
-    }
+import groovy.json.JsonSlurperClassic
 
-    environment {
-        toolbelt = tool name: 'sfdx_toolbelt', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
-    }
+node("test") {
 
-    stages {
-        stage('test') {
 
-          steps {
-            echo ' test stage ran'
-            echo 'new line'
-            echo ' success '
+    def TEST_LEVEL='RunLocalTests'
+    def PACKAGE_NAME='0Ho1U000000CaUzSAK'
+    def SERVER_KEY_CREDENTALS_ID = env.SecretFile
+    def CLIENT_ID = "3MVG9Gmy2zmPB01p.EXPuclCuhRe.SJE6h3JYVJ.L87ZzcfpeSht.v.E5lwn7iL1mAaccSJZO8fHvhmUtaFIc"
+    def toolbelt = tool 'sfdx_toolbelt'
 
-            dir(path: 'repo') {
-              checkout scm
-              sh "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r master -t test-delta"
+    // -------------------------------------------------------------------------
+    // Check out code from source control.
+    // -------------------------------------------------------------------------
 
+        //checkout scm
+    withEnv(["HOME=${env.WORKSPACE}"]) {
+
+        withCredentials([file(credentialsId: "SecretFile", variable: 'server_key_file')]) {
+       
+            // -------------------------------------------------------------------------
+            // Check out code from source control.
+            // -------------------------------------------------------------------------
+         
+            stage('checkout source') {
+                echo 'Pulling...' + env.BRANCH_NAME
+                echo 'Branch name: ' + BRANCH_NAME
+                
+                checkout scm
             }
-          }
-        }
-
-        stage('deployment') {
-            //acting branch is always available via BRANCH_NAME
-            //BRANCH_NAME == 'dev' etc - can be used to decided which sandbox deploying to
-            steps {
-                echo 'Deployment Stage'
+            
+            // -------------------------------------------------------------------------
+            // Create Delta Package
+            // -------------------------------------------------------------------------
+            
+            stage('Create Delta Package') {
+                echo "Delta package"
+                command "git"
+                rc = command "${toolbelt}/sfdx sfpowerkit:project:diff -d deltaTest2 -x -r origin/master -t test-delta"
+                
+                if (rc != 0) {
+                    error 'Error creating delta package'
+                }
             }
+            // -------------------------------------------------------------------------
+            // Authorize the Dev Hub org with JWT key and give it an alias.
+            // -------------------------------------------------------------------------
+ 
+            stage('Authorize SitD Org') {
+                echo "Authorize Sit Org"
+                
+                if (isUnix()) {
+                    rc = command "${toolbelt}/sfdx auth:jwt:grant --instanceurl https://test.salesforce.com/ --clientid ${CLIENT_ID} --username sean_carroll@ch.honda.com.sc --jwtkeyfile ${server_key_file} --setalias HubOrg"
+                } else {
+                    rc = command "${toolbelt}/sfdx auth:jwt:grant --instanceurl https://test.salesforce.com/ --clientid ${CLIENT_ID} --username sean_carroll@ch.honda.com.sc --jwtkeyfile \"${server_key_file}\" --setalias HubOrg"
+                }
+                if (rc != 0) {
+                    error 'Salesforce dev hub org authorization failed.'
+                }
+                
+            }
+            
+            // -------------------------------------------------------------------------
+            // Push source to test scratch org.
+            // -------------------------------------------------------------------------
+            /*
+            stage('Push To Test Scratch Org') {
+                rc = command "${toolbelt}/sfdx force:source:push --targetusername ciorg"
+                if (rc != 0) {
+                    error 'Salesforce push to test scratch org failed.'
+                }
+            }*/
         }
-
     }
 
-    post{
-        /*
-        always{
-            //will always run regardless of failure or success
-        }
-
-        success{
-            //Run on success
-        }
-
-        failure{
-            //Run on failure
-        }*/
+    stage('test'){
+        deleteDir()
     }
 
+}
+
+def command(script) {
+    if (isUnix()) {
+        return sh(returnStatus: true, script: script);
+    } else {
+        return bat(returnStatus: true, script: script);
+    }
 }
