@@ -3,7 +3,7 @@
 */
 public with sharing class BotController {
 
-    class HandlerMapping {
+   /* class HandlerMapping {
         
         public String handlerClassName;
         public Pattern utterancePattern;
@@ -61,6 +61,6 @@ public with sharing class BotController {
             return new BotResponse(new BotMessage('Bot', 'Oops, something went wrong invoking that command'));
         }
         
-    }
+    }*/
     
 }
